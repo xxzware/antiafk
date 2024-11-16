@@ -1,0 +1,103 @@
+wait(0.5)
+local ba = Instance.new("ScreenGui")
+local mainFrame = Instance.new("Frame")
+local titleLabel = Instance.new("TextLabel")
+local statusLabel = Instance.new("TextLabel")
+local closeButton = Instance.new("TextButton")
+local madeByLabel = Instance.new("TextLabel")
+
+ba.Parent = game.CoreGui
+ba.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+mainFrame.Parent = ba
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Position = UDim2.new(0.4, 0, 0.3, 0)
+mainFrame.Size = UDim2.new(0, 400, 0, 200)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundTransparency = 0.1
+mainFrame.ClipsDescendants = true
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 15)
+uiCorner.Parent = mainFrame
+
+titleLabel.Parent = mainFrame
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, -40, 0, 50)
+titleLabel.Position = UDim2.new(0, 20, 0, 10)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "Anti-AFK"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 28
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+statusLabel.Parent = mainFrame
+statusLabel.BackgroundTransparency = 1
+statusLabel.Size = UDim2.new(1, -40, 0, 30)
+statusLabel.Position = UDim2.new(0, 20, 0, 60)
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.Text = "Status: Active"
+statusLabel.TextColor3 = Color3.fromRGB(180, 180, 255)
+statusLabel.TextSize = 22
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+madeByLabel.Parent = mainFrame
+madeByLabel.BackgroundTransparency = 1
+madeByLabel.Size = UDim2.new(1, -40, 0, 30)
+madeByLabel.Position = UDim2.new(0, 20, 0, 100)
+madeByLabel.Font = Enum.Font.Gotham
+madeByLabel.Text = "Made by @m1chaell_. (michaell)"
+madeByLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+madeByLabel.TextSize = 18
+madeByLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+closeButton.Parent = mainFrame
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 20
+
+local closeButtonUICorner = Instance.new("UICorner")
+closeButtonUICorner.CornerRadius = UDim.new(0, 6)
+closeButtonUICorner.Parent = closeButton
+
+closeButton.MouseButton1Click:Connect(function()
+    ba:Destroy()
+end)
+
+local UserInputService = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+local virtualUser = game:service("VirtualUser")
+game.Players.LocalPlayer.Idled:Connect(function()
+    virtualUser:CaptureController()
+    virtualUser:ClickButton2(Vector2.new())
+    statusLabel.Text = "stupid fucking game tried kicking u"
+    wait(2)
+    statusLabel.Text = "Status: Active"
+end)
